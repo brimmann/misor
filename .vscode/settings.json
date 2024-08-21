@@ -1,0 +1,13 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:misor}/src/db.sqlite3",
+            "name": "default-sqlite"
+        }
+    ],
+    "cSpell.words": [
+        "specialspaceless"
+    ]
+}
