@@ -41,9 +41,13 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
 
+    # misor
+    "misor_core",
+
     # test
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
+    'mis.apps.MisConfig'
 
 ]
 

@@ -15,9 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+# from django.urls import urls
+from misor_core.main import misor
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('products.urls'))
+    path('test', include('products.urls')),
+    path("mis/", misor.view),
+    path("mis/<path:subpath>/", misor.view),
+    # re_path(r'^mis.*$', misor.view)
 ]
