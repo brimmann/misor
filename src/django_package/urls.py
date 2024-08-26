@@ -24,5 +24,5 @@ urlpatterns = [
     path('test', include('products.urls')),
     path("mis/", misor.view),
     path("mis/<path:subpath>/", misor.view),
-    # re_path(r'^mis.*$', misor.view)
+    # re_path(r'^mis.*$', misor.view) TODO: remove it later
 ]

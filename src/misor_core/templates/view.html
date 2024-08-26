@@ -24,6 +24,7 @@
                         <th scope="col" class="col-auto">{{ field.name|title }}</th>  <!-- Table headers use the label tags -->
                     {% endif %}
                 {% endfor %}
+                <th scope="col" style="width: 10%">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -34,6 +35,12 @@
                             <td class="col-auto">{{ field|as_crispy_field }}</td>
                         {% endif %}
                       {% endfor %}
+                        <td class="w-10" style="width: 10%;">
+                          <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary me-2">Save</button>
+                            <button type="button" class="btn btn-danger">Delete</button>
+                          </div>
+                        </td>
                     </tr>
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
@@ -41,7 +48,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
 

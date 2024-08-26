@@ -1,6 +1,11 @@
 from django.http import HttpResponse
 from django.urls import path
-from .utils import get_model_to_pass, create_model, view_model
+from .utils import create_model, view_model, parse_subpath
+import logging
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
+
+logger = logging.getLogger("misor")
 
 
 class _Misor:
@@ -8,7 +13,7 @@ class _Misor:
         self.models = None
         self._urls = []
 
-    def set_misor(self, *models):
+    def register(self, *models):
         self.models = models
 
     def get_tables(self):
@@ -16,18 +21,23 @@ class _Misor:
 
     def handle(self):
         self.generate_urls()
-        # print(self._urls)
 
+    def get_models_dict(self):
+        return {model.__name__.lower(): model for model in self.models}
+    
+    @method_decorator(never_cache)
     def view(self, request, subpath):
-        print("view", request, subpath)
-        path_components = subpath.strip('/').split('/')
-        action = path_components[1] if len(path_components) > 1 else "view"
+        logger.info("---------------------------------------------")
+        logger.info("##### VIEW CALLED #####")
+        action, model_name = parse_subpath(subpath)
+        model = self.get_models_dict().get(model_name)
 
         if action == "create":
-            return create_model(get_model_to_pass(self.models, path_components[0]), request)
+            return create_model(model, request)
         elif action == "view":
-            return view_model(get_model_to_pass(self.models, path_components[0]), request)
+            return view_model(model, request)
         else:
+            # TODO: implement 404
             return HttpResponse("Hey there")
 
     def get_urls(self):

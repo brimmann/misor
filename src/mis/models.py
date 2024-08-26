@@ -1,5 +1,6 @@
 from django.db import models
 from misor_core.main import misor
+import logging
 
 class Community(models.Model):
     name = models.CharField(max_length=100)
@@ -11,6 +12,8 @@ class Teacher(models.Model):
     university = models.CharField(max_length=200)
 
 
-misor.set_misor(Community, Teacher)
+misor.register(Community, Teacher)
 
-print("Tables called")
+logger = logging.getLogger("misor")
+logger.debug('IT ISN"T working')
+# print("Tables called")
