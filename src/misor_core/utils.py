@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.template import loader
+from django.template import loader, response
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Button, Row, Column, HTML, ButtonHolder, Div, Hidden
 from crispy_forms.bootstrap import InlineField
@@ -16,6 +16,11 @@ class ProductFormHelper(FormHelper):
         self.template = 'formset_table.html'
 
 
+def dashboard(request):
+    # TODO: We passed an empty context so it can be modified. Need further consideration.
+    return response.TemplateResponse(request, "dashboard.html", {})
+
+
 def view_model(model, request):
     helper = FormHelper()
 
@@ -30,7 +35,7 @@ def view_model(model, request):
             for field in form.fields.values():
                 field.disabled = True
 
-    return render(request, 'view.html', {"formset": model_formset})
+    return response.TemplateResponse(request, 'view.html', {"formset": model_formset})
 
 
 def create_model(model, request):
@@ -40,21 +45,17 @@ def create_model(model, request):
     ModelFormset = forms.modelformset_factory(model, fields='__all__', extra=1)
     if request.method == "POST":
         model_formset = ModelFormset(request.POST)
-        logger.debug(f"_thevom {model_formset}")
         # helper.form_show_labels = False
         # TODO: Remove this line later
         # helper.form_class = "row g-3 align-items-center"
-        logger.debug("form isn't valid 1")
-        model_formset.save()
-        return redirect(f'/mis/{model.__name__.lower()}')
         for form in model_formset:
             form.helper = FormHelper()
             form.helper.field_template = "field.html"
             form.helper.form_show_labels = False
             logger.debug("form isn't valid")
-            logger.debug("form is valid")
-            
-
+        if model_formset.is_valid():
+            model_formset.save()
+            return redirect(f'/mis/{model.__name__.lower()}')
     else:
         model_formset = ModelFormset(queryset=model.objects.none())
         # TODO: Remove this line later
@@ -64,7 +65,7 @@ def create_model(model, request):
             form.helper.field_template = "field.html"
             form.helper.form_show_labels = False
 
-    return render(request, 'create.html', {"formset": model_formset})
+    return response.TemplateResponse(request, 'create.html', {"formset": model_formset})
 
 
 # TODO: remove it later, i think there is not need for it anymore

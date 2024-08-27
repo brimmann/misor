@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.urls import path
-from .utils import create_model, view_model, parse_subpath
+from .utils import create_model, view_model, parse_subpath, dashboard
 import logging
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
@@ -26,16 +26,28 @@ class _Misor:
         return {model.__name__.lower(): model for model in self.models}
     
     @method_decorator(never_cache)
-    def view(self, request, subpath):
+    def view(self, request, subpath=None):
         logger.info("---------------------------------------------")
         logger.info("##### VIEW CALLED #####")
-        action, model_name = parse_subpath(subpath)
+        model_name = ""
+        if subpath:
+            action, model_name = parse_subpath(subpath)
+        else:
+            response = dashboard(request)
+            response.context_data["model_names"] = self.get_models_dict().keys()
+            response.context_data["current_model"] = model_name
+            return response
         model = self.get_models_dict().get(model_name)
-
         if action == "create":
-            return create_model(model, request)
+            response = create_model(model, request)
+            response.context_data["model_names"] = self.get_models_dict().keys()
+            response.context_data["current_model"] = model_name
+            return response
         elif action == "view":
-            return view_model(model, request)
+            response = view_model(model, request)
+            response.context_data["model_names"] = self.get_models_dict().keys()
+            response.context_data["current_model"] = model_name
+            return response
         else:
             # TODO: implement 404
             return HttpResponse("Hey there")
